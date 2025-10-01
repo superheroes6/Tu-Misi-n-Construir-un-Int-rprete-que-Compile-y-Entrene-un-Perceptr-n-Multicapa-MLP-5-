@@ -1,6 +1,6 @@
 # Importamos todas las librerías necesarias para trabajar con arrays, deep learning, visualización y métricas
 import numpy as np
-import tensorflow as tf
+import tensorflow as tf 
 from keras.models import Sequential
 from keras.layers import Dense, Input
 from keras.datasets import mnist
