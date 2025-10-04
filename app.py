@@ -7,7 +7,7 @@ import io
 import base64
 
 # Importar nuestro módulo de Firebase
-from firebase_service import FirebaseService
+from firebase_codigo.firebase_service import FirebaseService
 
 app = Flask(__name__)
 
