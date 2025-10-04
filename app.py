@@ -14,8 +14,8 @@ app = Flask(__name__)
 # Inicializar Firebase Service
 # CAMBIAR 'tu-proyecto.appspot.com' por tu bucket real
 firebase = FirebaseService(
-    credentials_path='firebase-credentials.json',
-storage_bucket='mlp-digit-recognizer.appspot.com')
+    credentials_path='firebase_codigo/firebase-credentials.json'
+)
 
 # Cargar el modelo entrenado
 print("Cargando modelo...")
@@ -90,7 +90,7 @@ def predecir():
         firebase_result = firebase.guardar_prediccion(imagen_original, img_preview, resultado)
         
         if firebase_result:
-            resultado['firebase_id'] = firebase_result['id']
+            resultado['id'] = firebase_result['id']
             resultado['guardado_firebase'] = True
         else:
             resultado['guardado_firebase'] = False

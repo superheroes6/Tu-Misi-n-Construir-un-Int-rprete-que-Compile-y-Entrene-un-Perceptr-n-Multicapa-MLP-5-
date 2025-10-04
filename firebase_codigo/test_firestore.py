@@ -1,9 +1,13 @@
-from firebase_codigo.firebase_config import db
+# test_firestore.py
+from firebase_admin import credentials, firestore
 
-# Añadir un documento a la colección 'predictions'
-doc_ref = db.collection("predictions").add({
-    "filename": "test.png",
-    "digit": 7
-})
+# Importa la configuración si está en firebase_config.py
+from firebase_codigo.firebase_config import db  # Ajusta la ruta según tu estructura
 
-print("Documento guardado:", doc_ref)
+# Crear una colección si no existe
+try:
+    collection_ref = db.collection('nombre_coleccion')
+    collection_ref.document('doc1').set({'campo': 'valor'})
+    print("Colección creada con éxito.")
+except Exception as e:
+    print(f"Error al crear la colección: {e}")

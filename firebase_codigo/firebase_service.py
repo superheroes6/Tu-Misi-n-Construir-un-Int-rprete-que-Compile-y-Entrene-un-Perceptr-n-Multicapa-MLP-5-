@@ -5,7 +5,7 @@ import io
 import uuid
 from datetime import datetime
 import firebase_admin
-from firebase_admin import credentials, firestore, storage
+from firebase_admin import credentials, firestore
 
 class FirebaseService:
     def __init__(self, credentials_path='firebase-credentials.json', storage_bucket=None):
@@ -22,13 +22,11 @@ class FirebaseService:
         
         try:
             cred = credentials.Certificate(credentials_path)
-            firebase_admin.initialize_app(cred, {
-                'storageBucket': storage_bucket
-            })
+            firebase_admin.initialize_app(cred)
             self.db = firestore.client()
-            self.bucket = storage.bucket()
+            self.bucket = None  # No usar Storage
             self.connected = True
-            print("✅ Firebase conectado correctamente")
+            print("✅ Firebase conectado correctamente (sin Storage)")
         except Exception as e:
             print(f"❌ Error al conectar Firebase: {e}")
             print("⚠️  La aplicación funcionará sin Firebase")
@@ -52,24 +50,15 @@ class FirebaseService:
         if not self.connected:
             print("⚠️  Firebase no está conectado, no se guardará la predicción")
             return None
-        
+
         try:
-            # Generar ID único
             prediccion_id = str(uuid.uuid4())
             timestamp = datetime.now()
-            
-            # Guardar imágenes en Storage
-            url_original = self._guardar_imagen_storage(
-                imagen_original, 
-                f'predicciones/{prediccion_id}/original.png'
-            )
-            
-            url_procesada = self._guardar_imagen_storage(
-                imagen_procesada,
-                f'predicciones/{prediccion_id}/procesada.png'
-            )
-            
-            # Preparar datos para Firestore
+
+            # No guardar imágenes en Storage
+            url_original = None
+            url_procesada = None
+
             doc_data = {
                 'id': prediccion_id,
                 'fecha': timestamp,
@@ -79,23 +68,22 @@ class FirebaseService:
                 'imagen_original_url': url_original,
                 'imagen_procesada_url': url_procesada,
             }
-            
-            # Guardar en Firestore
+
             self.db.collection('predicciones').document(prediccion_id).set(doc_data)
-            
+
             print(f"✅ Predicción guardada en Firebase: {prediccion_id}")
-            
+
             return {
                 'id': prediccion_id,
                 'url_original': url_original,
                 'url_procesada': url_procesada,
                 'fecha': timestamp.strftime('%Y-%m-%d %H:%M:%S')
             }
-            
+
         except Exception as e:
             print(f"❌ Error al guardar en Firebase: {e}")
             return None
-    
+
     def _guardar_imagen_storage(self, imagen, ruta):
         """
         Guarda una imagen en Firebase Storage
@@ -107,15 +95,8 @@ class FirebaseService:
         Returns:
             URL pública de la imagen
         """
-        buffer = io.BytesIO()
-        imagen.save(buffer, format='PNG')
-        buffer.seek(0)
-        
-        blob = self.bucket.blob(ruta)
-        blob.upload_from_file(buffer, content_type='image/png')
-        blob.make_public()
-        
-        return blob.public_url
+        # No guardar imágenes en Storage
+        return None
     
     def obtener_historial(self, limite=50):
         """
@@ -186,16 +167,11 @@ class FirebaseService:
             return False
         
         try:
-            # Eliminar imágenes de Storage
-            self.bucket.blob(f'predicciones/{prediccion_id}/original.png').delete()
-            self.bucket.blob(f'predicciones/{prediccion_id}/procesada.png').delete()
-            
+            # No eliminar imágenes de Storage
             # Eliminar documento de Firestore
             self.db.collection('predicciones').document(prediccion_id).delete()
-            
             print(f"✅ Predicción eliminada: {prediccion_id}")
             return True
-            
         except Exception as e:
             print(f"❌ Error al eliminar predicción: {e}")
             return False

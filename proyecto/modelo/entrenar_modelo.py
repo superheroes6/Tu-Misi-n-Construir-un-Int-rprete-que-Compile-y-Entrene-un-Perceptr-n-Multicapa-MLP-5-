@@ -56,6 +56,28 @@ history = modelo.fit(
     verbose=1
 )
 
+# Guardar gráfico de precisión y pérdida
+plt.figure(figsize=(12, 5))
+plt.subplot(1, 2, 1)
+plt.plot(history.history['accuracy'], label='Entrenamiento')
+plt.plot(history.history['val_accuracy'], label='Validación')
+plt.title('Precisión durante el entrenamiento')
+plt.xlabel('Época')
+plt.ylabel('Precisión')
+plt.legend()
+
+plt.subplot(1, 2, 2)
+plt.plot(history.history['loss'], label='Entrenamiento')
+plt.plot(history.history['val_loss'], label='Validación')
+plt.title('Pérdida durante el entrenamiento')
+plt.xlabel('Época')
+plt.ylabel('Pérdida')
+plt.legend()
+
+plt.tight_layout()
+plt.savefig("grafico_entrenamiento.png")
+print("Gráfico de entrenamiento guardado en 'grafico_entrenamiento.png'")
+
 # Evaluar el modelo
 print("\nEvaluando modelo...")
 score = modelo.evaluate(x_test, y_test, verbose=0)

@@ -521,7 +521,7 @@
 
                 content.innerHTML = data.predicciones.map(pred => `
                     <div class="historial-item">
-                        <img src="${pred.imagen_original_url}" alt="Imagen">
+                        <img src="${pred.imagen_original_url ? pred.imagen_original_url : 'https://via.placeholder.com/80?text=Sin+Imagen'}" alt="Imagen">
                         <div class="historial-info">
                             <h3 style="color: #667eea; margin: 0;">Dígito: ${pred.digito_predicho}</h3>
                             <p style="margin: 5px 0; color: #666;">Confianza: ${pred.confianza}%</p>
